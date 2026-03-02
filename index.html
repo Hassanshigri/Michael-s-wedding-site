@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- GSAP for smooth animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -25,19 +28,48 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
         <div class="container">
-            <a class="navbar-brand" href="#">
-                <span class="brand-text">S & M</span>
+            <a class="navbar-brand" href="#" data-aos="fade-down" data-aos-duration="1000">
+                <span class="brand-icon">❦</span>
+                <span class="brand-text">Sarah & Michael</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            
+            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="toggler-line"></span>
+                <span class="toggler-line"></span>
+                <span class="toggler-line"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="#story">Our Story</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#details">Details</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#gallery">Gallery</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#registry">Registry</a></li>
-                    <li class="nav-item"><a class="nav-link btn-rsvp" href="rsvp.html">RSVP</a></li>
+                    <li class="nav-item" data-aos="fade-down" data-aos-delay="100">
+                        <a class="nav-link" href="#story">
+                            <i class="fas fa-heart nav-icon"></i>
+                            <span>Our Story</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-aos="fade-down" data-aos-delay="200">
+                        <a class="nav-link" href="#details">
+                            <i class="fas fa-calendar-alt nav-icon"></i>
+                            <span>Details</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-aos="fade-down" data-aos-delay="300">
+                        <a class="nav-link" href="#gallery">
+                            <i class="fas fa-images nav-icon"></i>
+                            <span>Gallery</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-aos="fade-down" data-aos-delay="400">
+                        <a class="nav-link" href="#registry">
+                            <i class="fas fa-gift nav-icon"></i>
+                            <span>Registry</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" data-aos="fade-down" data-aos-delay="500">
+                        <a class="nav-link btn-rsvp magnetic-btn" href="rsvp.html">
+                            <i class="fas fa-envelope-open-text me-2"></i>RSVP
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -46,20 +78,37 @@
     <!-- Hero Section -->
     <section class="hero-section d-flex align-items-center justify-content-center">
         <div class="hero-bg">
-            <div class="floating-leaves" id="leaves"></div>
+            <div class="floating-petals" id="petals"></div>
+            <div class="gradient-overlay"></div>
         </div>
         <div class="hero-content text-center" data-aos="fade-up" data-aos-duration="1500">
-            <p class="hero-subtitle mb-3">Together with their families</p>
+            <div class="hero-badge" data-aos="zoom-in" data-aos-delay="500">
+                <i class="fas fa-infinity"></i>
+            </div>
+            <p class="hero-subtitle mb-3" data-aos="fade-up" data-aos-delay="200">Together with their families</p>
             <h1 class="hero-title mb-4">
-                <span class="name-highlight">Sarah</span>
-                <span class="and-text">&</span>
-                <span class="name-highlight">Michael</span>
+                <span class="name-highlight" data-aos="fade-right" data-aos-delay="400">Sarah</span>
+                <span class="and-text" data-aos="zoom-in" data-aos-delay="600">&</span>
+                <span class="name-highlight" data-aos="fade-left" data-aos-delay="400">Michael</span>
             </h1>
-            <p class="hero-date">June 15, 2025</p>
-            <p class="hero-location"><i class="fas fa-map-marker-alt me-2"></i>The Garden Estate, Napa Valley</p>
-            <div class="hero-cta mt-5">
-                <a href="rsvp.html" class="btn btn-primary btn-lg me-3">RSVP Now</a>
-                <a href="#details" class="btn btn-outline-light btn-lg">Event Details</a>
+            <div class="hero-divider" data-aos="scale-x" data-aos-delay="800">
+                <i class="fas fa-leaf divider-icon"></i>
+            </div>
+            <p class="hero-date" data-aos="fade-up" data-aos-delay="1000">
+                <i class="far fa-calendar-check me-2"></i>June 15, 2025
+            </p>
+            <p class="hero-location" data-aos="fade-up" data-aos-delay="1200">
+                <i class="fas fa-map-marker-alt me-2"></i>The Garden Estate, Napa Valley
+            </p>
+            <div class="hero-cta mt-5" data-aos="fade-up" data-aos-delay="1400">
+                <a href="rsvp.html" class="btn btn-primary btn-lg me-3 magnetic-btn">
+                    <span>RSVP Now</span>
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+                <a href="#details" class="btn btn-outline-light btn-lg magnetic-btn">
+                    <span>Event Details</span>
+                    <i class="fas fa-chevron-down ms-2"></i>
+                </a>
             </div>
         </div>
         <div class="scroll-indicator">
@@ -74,23 +123,50 @@
     <section class="countdown-section py-5">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                    <p class="section-label" data-aos="fade-up">Counting down to our special day</p>
-                    <div class="countdown-container d-flex justify-content-center gap-4" id="countdown" data-aos="fade-up" data-aos-delay="100">
-                        <div class="countdown-item">
-                            <span class="count-number" id="days">00</span>
+                <div class="col-lg-10 text-center">
+                    <div class="countdown-header" data-aos="fade-up">
+                        <i class="fas fa-hourglass-half countdown-icon"></i>
+                        <p class="section-label">Counting down to our special day</p>
+                    </div>
+                    <div class="countdown-container d-flex justify-content-center gap-4 flex-wrap" id="countdown" data-aos="fade-up" data-aos-delay="100">
+                        <div class="countdown-item" data-aos="zoom-in" data-aos-delay="200">
+                            <div class="count-circle">
+                                <span class="count-number" id="days">00</span>
+                                <svg class="count-svg" viewBox="0 0 100 100">
+                                    <circle class="count-circle-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="count-circle-progress" id="days-circle" cx="50" cy="50" r="45"/>
+                                </svg>
+                            </div>
                             <span class="count-label">Days</span>
                         </div>
-                        <div class="countdown-item">
-                            <span class="count-number" id="hours">00</span>
+                        <div class="countdown-item" data-aos="zoom-in" data-aos-delay="300">
+                            <div class="count-circle">
+                                <span class="count-number" id="hours">00</span>
+                                <svg class="count-svg" viewBox="0 0 100 100">
+                                    <circle class="count-circle-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="count-circle-progress" id="hours-circle" cx="50" cy="50" r="45"/>
+                                </svg>
+                            </div>
                             <span class="count-label">Hours</span>
                         </div>
-                        <div class="countdown-item">
-                            <span class="count-number" id="minutes">00</span>
+                        <div class="countdown-item" data-aos="zoom-in" data-aos-delay="400">
+                            <div class="count-circle">
+                                <span class="count-number" id="minutes">00</span>
+                                <svg class="count-svg" viewBox="0 0 100 100">
+                                    <circle class="count-circle-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="count-circle-progress" id="minutes-circle" cx="50" cy="50" r="45"/>
+                                </svg>
+                            </div>
                             <span class="count-label">Minutes</span>
                         </div>
-                        <div class="countdown-item">
-                            <span class="count-number" id="seconds">00</span>
+                        <div class="countdown-item" data-aos="zoom-in" data-aos-delay="500">
+                            <div class="count-circle">
+                                <span class="count-number" id="seconds">00</span>
+                                <svg class="count-svg" viewBox="0 0 100 100">
+                                    <circle class="count-circle-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="count-circle-progress" id="seconds-circle" cx="50" cy="50" r="45"/>
+                                </svg>
+                            </div>
                             <span class="count-label">Seconds</span>
                         </div>
                     </div>
@@ -106,18 +182,31 @@
                 <div class="col-lg-5" data-aos="fade-right">
                     <div class="story-images position-relative">
                         <div class="story-img-main">
-                            <img src="https://images.unsplash.com/photo-1522673607200-1645062cd958?w=600&h=800&fit=crop" alt="Couple" class="img-fluid rounded-4 shadow-lg">
+                            <div class="img-frame">
+                                <img src="https://images.unsplash.com/photo-1522673607200-1645062cd958?w=600&h=800&fit=crop" alt="Couple" class="img-fluid">
+                                <div class="img-corner top-left">❦</div>
+                                <div class="img-corner top-right">❦</div>
+                                <div class="img-corner bottom-left">❦</div>
+                                <div class="img-corner bottom-right">❦</div>
+                            </div>
                         </div>
-                        <div class="story-img-secondary">
-                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop" alt="Engagement" class="img-fluid rounded-4 shadow">
+                        <div class="story-img-secondary" data-aos="fade-up" data-aos-delay="300">
+                            <div class="img-frame-small">
+                                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop" alt="Engagement" class="img-fluid">
+                            </div>
                         </div>
-                        <div class="floating-badge">
-                            <span class="badge-text">5 Years<br>Together</span>
+                        <div class="floating-badge" data-aos="scale-up" data-aos-delay="500">
+                            <div class="badge-inner">
+                                <i class="fas fa-heart badge-icon"></i>
+                                <span class="badge-text">5 Years<br>Together</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-7 ps-lg-5 mt-5 mt-lg-0" data-aos="fade-left">
-                    <span class="section-tag">Our Love Story</span>
+                    <span class="section-tag">
+                        <i class="fas fa-feather-alt me-2"></i>Our Love Story
+                    </span>
                     <h2 class="section-title mb-4">From First Sight to Forever</h2>
                     <div class="story-content">
                         <p class="lead-text mb-4">It all started on a rainy Tuesday at the coffee shop on 5th Avenue. Sarah spilled her latte, Michael offered his napkin, and the rest is history.</p>
@@ -125,19 +214,31 @@
                         <p class="body-text mb-4">Now, we're ready to begin our greatest adventure yet – marriage. We can't wait to celebrate this next chapter surrounded by the people we love most.</p>
                         
                         <div class="timeline-mini mt-5">
-                            <div class="timeline-item">
+                            <div class="timeline-item" data-aos="fade-up" data-aos-delay="100">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-coffee"></i>
+                                </div>
                                 <span class="year">2019</span>
                                 <span class="event">First Meeting</span>
                             </div>
-                            <div class="timeline-item">
+                            <div class="timeline-item" data-aos="fade-up" data-aos-delay="200">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-home"></i>
+                                </div>
                                 <span class="year">2021</span>
                                 <span class="event">Moved In Together</span>
                             </div>
-                            <div class="timeline-item">
+                            <div class="timeline-item" data-aos="fade-up" data-aos-delay="300">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-ring"></i>
+                                </div>
                                 <span class="year">2023</span>
                                 <span class="event">The Proposal</span>
                             </div>
-                            <div class="timeline-item active">
+                            <div class="timeline-item active" data-aos="fade-up" data-aos-delay="400">
+                                <div class="timeline-icon">
+                                    <i class="fas fa-church"></i>
+                                </div>
                                 <span class="year">2025</span>
                                 <span class="event">The Wedding</span>
                             </div>
@@ -152,86 +253,142 @@
     <section id="details" class="details-section py-6 bg-light">
         <div class="container">
             <div class="text-center mb-5" data-aos="fade-up">
-                <span class="section-tag">The Celebration</span>
+                <span class="section-tag">
+                    <i class="fas fa-champagne-glasses me-2"></i>The Celebration
+                </span>
                 <h2 class="section-title">Wedding Details</h2>
+                <div class="title-decoration">
+                    <i class="fas fa-leaf"></i>
+                </div>
             </div>
             
             <div class="row g-4">
                 <!-- Ceremony -->
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
                     <div class="detail-card h-100">
+                        <div class="card-shine"></div>
                         <div class="card-icon">
                             <i class="fas fa-church"></i>
+                            <div class="icon-ring"></div>
                         </div>
                         <h3>The Ceremony</h3>
-                        <div class="time-badge">3:00 PM</div>
-                        <p class="venue-name">Garden Chapel</p>
+                        <div class="time-badge">
+                            <i class="far fa-clock me-1"></i>3:00 PM
+                        </div>
+                        <p class="venue-name">
+                            <i class="fas fa-location-dot me-2 text-gold"></i>Garden Chapel
+                        </p>
                         <p class="venue-address">The Garden Estate<br>1234 Vineyard Lane<br>Napa Valley, CA 94558</p>
-                        <a href="#" class="btn-map" onclick="openMap('Garden Estate Napa Valley')">
-                            <i class="fas fa-map-marked-alt me-2"></i>View Map
+                        <a href="#" class="btn-map magnetic-btn" onclick="openMap('Garden Estate Napa Valley')">
+                            <i class="fas fa-map-location-dot me-2"></i>View Map
                         </a>
+                        <div class="card-floral">
+                            <i class="fas fa-seedling"></i>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Cocktail Hour -->
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
                     <div class="detail-card h-100">
+                        <div class="card-shine"></div>
                         <div class="card-icon">
                             <i class="fas fa-glass-cheers"></i>
+                            <div class="icon-ring"></div>
                         </div>
                         <h3>Cocktail Hour</h3>
-                        <div class="time-badge">4:30 PM</div>
-                        <p class="venue-name">Rose Terrace</p>
+                        <div class="time-badge">
+                            <i class="far fa-clock me-1"></i>4:30 PM
+                        </div>
+                        <p class="venue-name">
+                            <i class="fas fa-location-dot me-2 text-gold"></i>Rose Terrace
+                        </p>
                         <p class="venue-address">Garden Estate Grounds<br>Outdoor patio with vineyard views<br>Cocktail attire welcome</p>
-                        <span class="feature-tag">Live Jazz</span>
+                        <span class="feature-tag">
+                            <i class="fas fa-music me-1"></i>Live Jazz
+                        </span>
+                        <div class="card-floral">
+                            <i class="fas fa-seedling"></i>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Reception -->
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
                     <div class="detail-card h-100">
+                        <div class="card-shine"></div>
                         <div class="card-icon">
                             <i class="fas fa-utensils"></i>
+                            <div class="icon-ring"></div>
                         </div>
                         <h3>The Reception</h3>
-                        <div class="time-badge">6:00 PM</div>
-                        <p class="venue-name">Grand Ballroom</p>
+                        <div class="time-badge">
+                            <i class="far fa-clock me-1"></i>6:00 PM
+                        </div>
+                        <p class="venue-name">
+                            <i class="fas fa-location-dot me-2 text-gold"></i>Grand Ballroom
+                        </p>
                         <p class="venue-address">Garden Estate Main House<br>Dinner & Dancing<br>Evening attire</p>
-                        <span class="feature-tag">Open Bar</span>
+                        <span class="feature-tag">
+                            <i class="fas fa-wine-glass me-1"></i>Open Bar
+                        </span>
+                        <div class="card-floral">
+                            <i class="fas fa-seedling"></i>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Additional Info -->
             <div class="row mt-5">
-                <div class="col-lg-8 mx-auto">
+                <div class="col-lg-10 mx-auto">
                     <div class="info-boxes row g-4">
                         <div class="col-md-6" data-aos="fade-up">
                             <div class="info-box">
-                                <i class="fas fa-tshirt"></i>
+                                <div class="info-icon-wrapper">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
                                 <h4>Dress Code</h4>
                                 <p>Semi-Formal / Garden Party Attire<br>Heels not recommended on grass</p>
+                                <div class="info-hover">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6" data-aos="fade-up" data-aos-delay="100">
                             <div class="info-box">
-                                <i class="fas fa-parking"></i>
+                                <div class="info-icon-wrapper">
+                                    <i class="fas fa-square-parking"></i>
+                                </div>
                                 <h4>Parking & Transport</h4>
                                 <p>Complimentary valet parking<br>Shuttle service from downtown Napa available</p>
+                                <div class="info-hover">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6" data-aos="fade-up" data-aos-delay="200">
                             <div class="info-box">
-                                <i class="fas fa-bed"></i>
+                                <div class="info-icon-wrapper">
+                                    <i class="fas fa-hotel"></i>
+                                </div>
                                 <h4>Accommodations</h4>
                                 <p>Room blocks at nearby hotels<br>Special rates available with code "SARAHMICHAEL"</p>
+                                <div class="info-hover">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6" data-aos="fade-up" data-aos-delay="300">
                             <div class="info-box">
-                                <i class="fas fa-child"></i>
+                                <div class="info-icon-wrapper">
+                                    <i class="fas fa-baby-carriage"></i>
+                                </div>
                                 <h4>Children</h4>
                                 <p>Adults-only celebration<br>Babysitting services available upon request</p>
+                                <div class="info-hover">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -244,45 +401,65 @@
     <section id="gallery" class="gallery-section py-6">
         <div class="container-fluid px-4">
             <div class="text-center mb-5" data-aos="fade-up">
-                <span class="section-tag">Moments</span>
+                <span class="section-tag">
+                    <i class="fas fa-camera-retro me-2"></i>Moments
+                </span>
                 <h2 class="section-title">Photo Gallery</h2>
+                <div class="title-decoration">
+                    <i class="fas fa-leaf"></i>
+                </div>
             </div>
             
             <div class="gallery-grid" data-aos="fade-up">
                 <div class="gallery-item large">
                     <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=600&fit=crop" alt="Engagement" class="img-fluid">
                     <div class="gallery-overlay">
-                        <span class="view-text">View</span>
+                        <div class="overlay-content">
+                            <i class="fas fa-expand"></i>
+                            <span class="view-text">View</span>
+                        </div>
                     </div>
                 </div>
                 <div class="gallery-item">
                     <img src="https://images.unsplash.com/photo-1522673607200-1645062cd958?w=400&h=400&fit=crop" alt="Couple" class="img-fluid">
                     <div class="gallery-overlay">
-                        <span class="view-text">View</span>
+                        <div class="overlay-content">
+                            <i class="fas fa-expand"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="gallery-item">
                     <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400&h=400&fit=crop" alt="Ring" class="img-fluid">
                     <div class="gallery-overlay">
-                        <span class="view-text">View</span>
+                        <div class="overlay-content">
+                            <i class="fas fa-expand"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="gallery-item">
                     <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&h=400&fit=crop" alt="Flowers" class="img-fluid">
                     <div class="gallery-overlay">
-                        <span class="view-text">View</span>
+                        <div class="overlay-content">
+                            <i class="fas fa-expand"></i>
+                        </div>
                     </div>
                 </div>
                 <div class="gallery-item wide">
                     <img src="https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=800&h=400&fit=crop" alt="Wedding venue" class="img-fluid">
                     <div class="gallery-overlay">
-                        <span class="view-text">View Full Gallery</span>
+                        <div class="overlay-content">
+                            <i class="fas fa-images"></i>
+                            <span class="view-text">View Full Gallery</span>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="text-center mt-4">
-                <a href="gallery.html" class="btn btn-outline-primary btn-lg">View All Photos</a>
+            <div class="text-center mt-5" data-aos="fade-up">
+                <a href="gallery.html" class="btn btn-outline-primary btn-lg magnetic-btn">
+                    <span>View All Photos</span>
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
             </div>
         </div>
     </section>
@@ -292,52 +469,92 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center" data-aos="fade-up">
-                    <span class="section-tag">Gifts</span>
+                    <span class="section-tag">
+                        <i class="fas fa-gift me-2"></i>Gifts
+                    </span>
                     <h2 class="section-title mb-4">Registry</h2>
+                    <div class="title-decoration mb-4">
+                        <i class="fas fa-leaf"></i>
+                    </div>
                     <p class="lead mb-5">Your presence is the greatest present! But if you'd like to bless us with a gift, we've registered at the following stores:</p>
                     
                     <div class="registry-logos row justify-content-center g-4 mb-5">
-                        <div class="col-6 col-md-3">
-                            <a href="#" class="registry-link">
+                        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
+                            <a href="#" class="registry-link magnetic-btn">
                                 <div class="registry-card">
-                                    <i class="fas fa-home"></i>
+                                    <div class="registry-icon">
+                                        <i class="fas fa-couch"></i>
+                                    </div>
                                     <span>Crate & Barrel</span>
+                                    <div class="registry-arrow">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </div>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <a href="#" class="registry-link">
+                        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
+                            <a href="#" class="registry-link magnetic-btn">
                                 <div class="registry-card">
-                                    <i class="fas fa-bed"></i>
+                                    <div class="registry-icon">
+                                        <i class="fas fa-bed"></i>
+                                    </div>
                                     <span>West Elm</span>
+                                    <div class="registry-arrow">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </div>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <a href="#" class="registry-link">
+                        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
+                            <a href="#" class="registry-link magnetic-btn">
                                 <div class="registry-card">
-                                    <i class="fas fa-plane"></i>
+                                    <div class="registry-icon">
+                                        <i class="fas fa-plane-departure"></i>
+                                    </div>
                                     <span>Honeyfund</span>
+                                    <div class="registry-arrow">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </div>
                                 </div>
                             </a>
                         </div>
-                        <div class="col-6 col-md-3">
-                            <a href="#" class="registry-link">
+                        <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="400">
+                            <a href="#" class="registry-link magnetic-btn">
                                 <div class="registry-card">
-                                    <i class="fas fa-gift"></i>
+                                    <div class="registry-icon">
+                                        <i class="fab fa-amazon"></i>
+                                    </div>
                                     <span>Amazon</span>
+                                    <div class="registry-arrow">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </div>
                                 </div>
                             </a>
                         </div>
                     </div>
                     
-                    <div class="honeymoon-fund" data-aos="fade-up" data-aos-delay="200">
-                        <div class="fund-icon">
-                            <i class="fas fa-heart"></i>
+                    <div class="honeymoon-fund" data-aos="fade-up" data-aos-delay="500">
+                        <div class="fund-header">
+                            <div class="fund-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="fund-hearts">
+                                <i class="fas fa-heart heart-1"></i>
+                                <i class="fas fa-heart heart-2"></i>
+                                <i class="fas fa-heart heart-3"></i>
+                            </div>
                         </div>
                         <h4>Honeymoon Fund</h4>
                         <p>Help us create memories in Bali! Contributions toward our dream honeymoon are greatly appreciated.</p>
-                        <a href="#" class="btn btn-primary">Contribute to Honeymoon</a>
+                        <div class="fund-progress">
+                            <div class="progress-bar-custom">
+                                <div class="progress-fill" style="width: 65%"></div>
+                                <span class="progress-text">65% Funded</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-primary magnetic-btn mt-4">
+                            <i class="fas fa-gift me-2"></i>Contribute to Honeymoon
+                        </a>
                     </div>
                 </div>
             </div>
@@ -348,11 +565,24 @@
     <section class="rsvp-cta-section py-6">
         <div class="container">
             <div class="rsvp-box text-center" data-aos="zoom-in">
-                <div class="leaf-decoration leaf-left">🌿</div>
-                <div class="leaf-decoration leaf-right">🌿</div>
+                <div class="floating-elements">
+                    <i class="fas fa-leaf leaf-1"></i>
+                    <i class="fas fa-leaf leaf-2"></i>
+                    <i class="fas fa-leaf leaf-3"></i>
+                    <i class="fas fa-heart heart-float"></i>
+                </div>
+                <div class="rsvp-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
                 <h2 class="mb-3">Join Us in Celebration</h2>
                 <p class="mb-4">Please respond by May 1, 2025</p>
-                <a href="rsvp.html" class="btn btn-light btn-lg px-5">RSVP Now</a>
+                <div class="rsvp-deadline">
+                    <i class="fas fa-hourglass-half me-2"></i>
+                    <span id="rsvp-countdown">30 days left</span>
+                </div>
+                <a href="rsvp.html" class="btn btn-light btn-lg px-5 magnetic-btn mt-4">
+                    <i class="fas fa-pen-fancy me-2"></i>RSVP Now
+                </a>
             </div>
         </div>
     </section>
@@ -362,19 +592,34 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
-                    <span class="footer-brand">S & M</span>
-                    <p class="footer-date">June 15, 2025</p>
+                    <span class="footer-brand">❦ Sarah & Michael</span>
+                    <p class="footer-date">
+                        <i class="far fa-calendar-alt me-2"></i>June 15, 2025
+                    </p>
                 </div>
                 <div class="col-md-4 text-center mb-3 mb-md-0">
                     <div class="footer-social">
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-pinterest"></i></a>
-                        <a href="#" class="social-link"><i class="fas fa-envelope"></i></a>
+                        <a href="#" class="social-link magnetic-btn">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link magnetic-btn">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                        <a href="#" class="social-link magnetic-btn">
+                            <i class="fas fa-envelope"></i>
+                        </a>
                     </div>
                 </div>
                 <div class="col-md-4 text-center text-md-end">
-                    <p class="footer-credit">Made with <i class="fas fa-heart text-danger"></i> for Sarah & Michael</p>
+                    <p class="footer-credit">
+                        <i class="fas fa-code me-2"></i>Made with 
+                        <i class="fas fa-heart text-danger mx-1"></i> 
+                        for Sarah & Michael
+                    </p>
                 </div>
+            </div>
+            <div class="footer-divider">
+                <i class="fas fa-leaf"></i>
             </div>
         </div>
     </footer>
@@ -384,11 +629,18 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Location</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title">
+                        <i class="fas fa-map-location-dot me-2"></i>Location
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-0">
                     <iframe id="mapFrame" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" id="directionsBtn" target="_blank">
+                        <i class="fas fa-directions me-2"></i>Get Directions
+                    </a>
                 </div>
             </div>
         </div>
