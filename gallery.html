@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery | Sarah & Michael</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- PhotoSwipe Lightbox CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.2/photoswipe.min.css">
+    
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Gallery Specific Styles */
+        .gallery-hero {
+            min-height: 50vh;
+            background: linear-gradient(135deg, rgba(156, 175, 136, 0.9) 0%, rgba(122, 143, 106, 0.9) 100%), 
+                        url('https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&h=1080&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-top: 76px;
+            overflow: hidden;
+        }
+        
+        .gallery-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></svg>');
+            background-size: 100px 100px;
+            animation: drift 20s linear infinite;
+        }
+        
+        @keyframes drift {
+            from { background-position: 0 0; }
+            to { background-position: 100px 100px; }
+        }
+        
+        .gallery-hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+        
+        .gallery-hero h1 {
+            font-size: 4rem;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .gallery-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .gallery-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .gallery-stat {
+            text-align: center;
+        }
+        
+        .gallery-stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+        }
+        
+        .gallery-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        /* Filter Bar */
+        .gallery-filter-bar {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin: -30px auto 50px;
+            max-width: 900px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .filter-btn {
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: var(--sage);
+            background: var(--sage);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(156, 175, 136, 0.3);
+        }
+        
+        .filter-btn i {
+            font-size: 0.9rem;
+        }
+        
+        .filter-divider {
+            width: 1px;
+            height: 30px;
+            background: #e0e0e0;
+        }
+        
+        .view-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .view-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .view-btn:hover,
+        .view-btn.active {
+            border-color: var(--sage);
+            background: var(--sage);
+            color: white;
+        }
+        
+        /* Masonry Grid */
+        .gallery-masonry {
+            column-count: 4;
+            column-gap: 20px;
+            padding: 0 20px;
+            max-width: 1600px;
+            margin: 0 auto 80px;
+        }
+        
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.6s;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(44, 62, 45, 0.8) 0%, transparent 60%);
+            opacity: 0;
+            transition: all 0.4s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 25px;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        
+        .gallery-category {
+            display: inline-block;
+            padding: 6px 15px;
+            background: var(--gold);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            transform: translateY(20px);
+            transition: all 0.4s;
+        }
+        
+        .gallery-item:hover .gallery-category {
+            transform: translateY(0);
+        }
+        
+        .gallery-title {
+            color: white;
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            transform: translateY(20px);
+            transition: all 0.4s 0.1s;
+        }
+        
+        .gallery-item:hover .gallery-title {
+            transform: translateY(0);
+        }
+        
+        .gallery-meta {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: translateY(20px);
+            transition: all 0.4s 0.2s;
+        }
+        
+        .gallery-item:hover .gallery-meta {
+            transform: translateY(0);
+        }
+        
+        .gallery-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .gallery-zoom {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            font-size: 1.2rem;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.4s;
+        }
+        
+        .gallery-item:hover .gallery-zoom {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* Featured Item (Large) */
+        .gallery-item.featured {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+        
+        /* Video Item */
+        .gallery-item.video .gallery-overlay::before {
+            content: '\f04b';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--sage);
+        }
+        
+        /* Load More */
+        .load-more-section {
+            text-align: center;
+            padding: 40px 20px 80px;
+        }
+        
+        .btn-load-more {
+            padding: 18px 50px;
+            border-radius: 50px;
+            border: 2px solid var(--sage);
+            background: transparent;
+            color: var(--sage);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-load-more:hover {
+            background: var(--sage);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(156, 175, 136, 0.3);
+        }
+        
+        .btn-load-more.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .btn-load-more.loading i {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Upload Section (for admin) */
+        .upload-section {
+            background: linear-gradient(135deg, var(--blush) 0%, #fff 100%);
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .upload-zone {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            border: 3px dashed var(--sage);
+            border-radius: 30px;
+            background: white;
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.05);
+        }
+        
+        .upload-zone i {
+            font-size: 4rem;
+            color: var(--sage);
+            margin-bottom: 20px;
+        }
+        
+        .upload-zone h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .upload-zone p {
+            color: #666;
+            margin-bottom: 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .gallery-masonry {
+                column-count: 3;
+            }
+        }
+        
+        @media (max-width: 991px) {
+            .gallery-hero h1 {
+                font-size: 3rem;
+            }
+            
+            .gallery-masonry {
+                column-count: 2;
+                column-gap: 15px;
+                padding: 0 15px;
+            }
+            
+            .gallery-item {
+                margin-bottom: 15px;
+                border-radius: 15px;
+            }
+            
+            .gallery-filter-bar {
+                margin: -20px 15px 40px;
+                padding: 20px;
+            }
+            
+            .filter-divider,
+            .view-options {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .gallery-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .gallery-stats {
+                gap: 20px;
+            }
+            
+            .gallery-stat-number {
+                font-size: 1.8rem;
+            }
+            
+            .gallery-masonry {
+                column-count: 1;
+            }
+            
+            .gallery-filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-btn {
+                justify-content: center;
+            }
+        }
+        
+        /* Lightbox Custom Styles */
+        .pswp__bg {
+            background: rgba(44, 62, 45, 0.95);
+        }
+        
+        .pswp__ui--fit .pswp__top-bar,
+        .pswp__ui--fit .pswp__caption {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .pswp__caption__center {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+        }
+        
+        /* Favorite/Like Button */
+        .gallery-like {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 45px;
+            height: 45px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+            font-size: 1.1rem;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.4s;
+            border: none;
+        }
+        
+        .gallery-item:hover .gallery-like {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .gallery-like:hover,
+        .gallery-like.active {
+            color: #e74c3c;
+            transform: scale(1.1);
+        }
+        
+        .gallery-like.active i {
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="brand-icon">❦</span>
+                <span class="brand-text">Sarah & Michael</span>
+            </a>
+            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="toggler-line"></span>
+                <span class="toggler-line"></span>
+                <span class="toggler-line"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#story">
+                            <i class="fas fa-heart nav-icon"></i>
+                            <span>Our Story</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#details">
+                            <i class="fas fa-calendar-alt nav-icon"></i>
+                            <span>Details</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="gallery.html">
+                            <i class="fas fa-images nav-icon"></i>
+                            <span>Gallery</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#registry">
+                            <i class="fas fa-gift nav-icon"></i>
+                            <span>Registry</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-rsvp" href="rsvp.html">
+                            <i class="fas fa-envelope-open-text me-2"></i>RSVP
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Gallery Hero -->
+    <section class="gallery-hero">
+        <div class="gallery-hero-content" data-aos="fade-up">
+            <h1>Our Gallery</h1>
+            <p>Capturing the moments that tell our love story</p>
+            <div class="gallery-stats">
+                <div class="gallery-stat" data-aos="fade-up" data-aos-delay="100">
+                    <span class="gallery-stat-number" id="photoCount">48</span>
+                    <span class="gallery-stat-label">Photos</span>
+                </div>
+                <div class="gallery-stat" data-aos="fade-up" data-aos-delay="200">
+                    <span class="gallery-stat-number" id="videoCount">6</span>
+                    <span class="gallery-stat-label">Videos</span>
+                </div>
+                <div class="gallery-stat" data-aos="fade-up" data-aos-delay="300">
+                    <span class="gallery-stat-number" id="memoryCount">∞</span>
+                    <span class="gallery-stat-label">Memories</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Bar -->
+    <div class="gallery-filter-bar" data-aos="fade-up">
+        <button class="filter-btn active" onclick="filterGallery('all')">
+            <i class="fas fa-th-large"></i> All Photos
+        </button>
+        <button class="filter-btn" onclick="filterGallery('engagement')">
+            <i class="fas fa-ring"></i> Engagement
+        </button>
+        <button class="filter-btn" onclick="filterGallery('prewedding')">
+            <i class="fas fa-camera"></i> Pre-Wedding
+        </button>
+        <button class="filter-btn" onclick="filterGallery('couple')">
+            <i class="fas fa-heart"></i> Couple
+        </button>
+        <button class="filter-btn" onclick="filterGallery('travel')">
+            <i class="fas fa-plane"></i> Travel
+        </button>
+        
+        <div class="filter-divider"></div>
+        
+        <div class="view-options">
+            <button class="view-btn active" onclick="changeView('grid')" title="Grid View">
+                <i class="fas fa-th-large"></i>
+            </button>
+            <button class="view-btn" onclick="changeView('masonry')" title="Masonry View">
+                <i class="fas fa-th"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Gallery Masonry Grid -->
+    <div class="gallery-masonry" id="galleryGrid">
+        <!-- Gallery items will be populated by JavaScript -->
+    </div>
+
+    <!-- Load More -->
+    <div class="load-more-section">
+        <button class="btn-load-more" id="loadMoreBtn" onclick="loadMorePhotos()">
+            <i class="fas fa-spinner"></i> Load More Photos
+        </button>
+    </div>
+
+    <!-- Upload Section (Optional - for couples to add more) -->
+    <section class="upload-section">
+        <div class="container">
+            <span class="section-tag" data-aos="fade-up">Share Your Photos</span>
+            <h2 class="section-title mb-5" data-aos="fade-up">Have Photos to Share?</h2>
+            
+            <div class="upload-zone" data-aos="fade-up" onclick="triggerUpload()" id="uploadZone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Upload Your Photos</h3>
+                <p>Drag and drop photos here, or click to browse<br>Support: JPG, PNG, HEIC (Max 10MB each)</p>
+                <input type="file" id="photoUpload" multiple accept="image/*" style="display: none;" onchange="handleUpload(this.files)">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <span class="footer-brand">❦ Sarah & Michael</span>
+                    <p class="footer-date">
+                        <i class="far fa-calendar-alt me-2"></i>June 15, 2025
+                    </p>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <div class="footer-social">
+                        <a href="#" class="social-link magnetic-btn">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link magnetic-btn">
+                            <i class="fab fa-pinterest"></i>
+                        </a>
+                        <a href="#" class="social-link magnetic-btn">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <p class="footer-credit">
+                        <i class="fas fa-camera me-2"></i>Captured with 
+                        <i class="fas fa-heart text-danger mx-1"></i> 
+                        by friends & family
+                    </p>
+                </div>
+            </div>
+            <div class="footer-divider">
+                <i class="fas fa-leaf"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- PhotoSwipe Lightbox Container -->
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="pswp__bg"></div>
+        <div class="pswp__scroll-wrap">
+            <div class="pswp__container">
+                <div class="pswp__item"></div>
+                <div class="pswp__item"></div>
+                <div class="pswp__item"></div>
+            </div>
+            <div class="pswp__ui pswp__ui--hidden">
+                <div class="pswp__top-bar">
+                    <div class="pswp__counter"></div>
+                    <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                    <button class="pswp__button pswp__button--share" title="Share"></button>
+                    <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                    <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                    <div class="pswp__preloader">
+                        <div class="pswp__preloader__icn">
+                            <div class="pswp__preloader__cut">
+                                <div class="pswp__preloader__donut"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                    <div class="pswp__share-tooltip"></div>
+                </div>
+                <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+                <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+                <div class="pswp__caption">
+                    <div class="pswp__caption__center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.2/photoswipe-lightbox.esm.min.js" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.2/photoswipe.esm.min.js" type="module"></script>
+    <script src="js/main.js"></script>
+    <script type="module">
+        import PhotoSwipeLightbox from 'https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.2/photoswipe-lightbox.esm.min.js';
+        
+        // Gallery Data
+        const galleryData = [
+            { id: 1, src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&h=800&fit=crop', thumb: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=300&fit=crop', category: 'engagement', title: 'The Proposal', date: 'Dec 24, 2023', location: 'Central Park', width: 1200, height: 800 },
+            { id: 2, src: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?w=800&h=1200&fit=crop', thumb: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?w=300&h=400&fit=crop', category: 'couple', title: 'Autumn Stroll', date: 'Oct 15, 2023', location: 'Napa Valley', width: 800, height: 1200 },
+            { id: 3, src: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1200&h=800&fit=crop', thumb: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=400&h=300&fit=crop', category: 'engagement', title: 'The Ring', date: 'Dec 24, 2023', location: 'Home', width: 1200, height: 800 },
+            { id: 4, src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&h=1200&fit=crop', thumb: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=300&h=400&fit=crop', category: 'prewedding', title: 'Flower Details', date: 'Jan 10, 2024', location: 'Studio', width: 800, height: 1200 },
+            { id: 5, src: 'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=1600&h=900&fit=crop', thumb: 'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=500&h=300&fit=crop', category: 'prewedding', title: 'Venue Preview', date: 'Feb 1, 2024', location: 'Garden Estate', width: 1600, height: 900, featured: true },
+            { id: 6, src: 'https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?w=800&h=1200&fit=crop', thumb: 'https://images.unsplash.com/photo-1529634806980-85c3dd6d34ac?w=300&h=400&fit=crop', category: 'couple', title: 'Beach Sunset', date: 'Aug 20, 2023', location: 'Malibu Beach', width: 800, height: 1200 },
+            { id: 7, src: 'https://images.unsplash.com/photo-1544078751-58fee2d8a03b?w=1200&h=800&fit=crop', thumb: 'https://images.unsplash.com/photo-1544078751-58fee2d8a03b?w=400&h=300&fit=crop', category: 'travel', title: 'Swiss Alps', date: 'Jul 12, 2023', location: 'Switzerland', width: 1200, height: 800 },
+            { id: 8, src: 'https://images.unsplash.com/photo-1537907690979-ee8e01276184?w=800&h=1200&fit=crop', thumb: 'https://images.unsplash.com/photo-1537907690979-ee8e01276184?w=300&h=400&fit=crop', category: 'travel', title: 'Barcelona Nights', date: 'Jun 5, 2023', location: 'Spain', width: 800, height: 1200 },
+            { id: 9, src: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=1200&h=800&fit=crop', thumb: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=400&h=300&fit=crop', category: 'engagement', title: 'Celebration', date: 'Dec 24, 2023', location: 'Restaurant', width: 1200, height: 800 },
+            { id: 10, src: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&h=1200&fit=crop', thumb: 'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=300&h=400&fit=crop', category: 'prewedding', title: 'Dress Fitting', date: 'Mar 1, 2024', location: 'Boutique', width: 800, height: 1200 },
+            { id: 11, src: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=1200&h=800&fit=crop', thumb: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&h=300&fit=crop', category: 'couple', title: 'Coffee Date', date: 'Sep 3, 2023', location: 'Our Cafe', width: 1200, height: 800 },
+            { id: 12, src: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=1600&h=900&fit=crop', thumb: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=500&h=300&fit=crop', category: 'prewedding', title: 'Wedding Prep', date: 'Apr 15, 2024', location: 'Garden Estate', width: 1600, height: 900, featured: true }
+        ];
+        
+        let currentFilter = 'all';
+        let displayedPhotos = 8;
+        let lightbox;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                once: true,
+                offset: 100
+            });
+            
+            renderGallery();
+            initLightbox();
+            initUploadZone();
+        });
+        
+        // Render Gallery
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            const filtered = currentFilter === 'all' 
+                ? galleryData 
+                : galleryData.filter(item => item.category === currentFilter);
+            
+            const toShow = filtered.slice(0, displayedPhotos);
+            
+            grid.innerHTML = toShow.map((item, index) => `
+                <div class="gallery-item ${item.featured ? 'featured' : ''}" 
+                     data-aos="fade-up" 
+                     data-aos-delay="${index % 4 * 100}"
+                     data-category="${item.category}"
+                     data-id="${item.id}">
+                    
+                    <button class="gallery-like" onclick="toggleLike(event, ${item.id})">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    
+                    <a href="${item.src}" 
+                       data-pswp-width="${item.width}" 
+                       data-pswp-height="${item.height}"
+                       data-caption="${item.title} - ${item.location}, ${item.date}"
+                       target="_blank">
+                        <img src="${item.thumb}" alt="${item.title}" loading="lazy">
+                    </a>
+                    
+                    <div class="gallery-overlay">
+                        <span class="gallery-category">${capitalize(item.category)}</span>
+                        <h3 class="gallery-title">${item.title}</h3>
+                        <div class="gallery-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> ${item.location}</span>
+                            <span><i class="far fa-calendar"></i> ${item.date}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="gallery-zoom">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Update load more button
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (displayedPhotos >= filtered.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'inline-flex';
+                loadMoreBtn.innerHTML = '<i class="fas fa-spinner"></i> Load More Photos';
+                loadMoreBtn.classList.remove('loading');
+            }
+            
+            // Update stats
+            updateStats(filtered.length);
+        }
+        
+        // Initialize PhotoSwipe Lightbox
+        function initLightbox() {
+            lightbox = new PhotoSwipeLightbox({
+                gallery: '#galleryGrid',
+                children: 'a',
+                pswpModule: () => import('https://cdnjs.cloudflare.com/ajax/libs/photoswipe/5.4.2/photoswipe.esm.min.js'),
+                padding: { top: 20, bottom: 20, left: 20, right: 20 },
+                bgOpacity: 0.95
+            });
+            
+            lightbox.on('uiRegister', function() {
+                lightbox.pswp.ui.registerElement({
+                    name: 'download-button',
+                    order: 8,
+                    isButton: true,
+                    tagName: 'button',
+                    html: '<i class="fas fa-download"></i>',
+                    onclick: (event, el, pswp) => {
+                        const link = document.createElement('a');
+                        link.href = pswp.currSlide.data.src;
+                        link.download = 'wedding-photo.jpg';
+                        link.click();
+                    }
+                });
+            });
+            
+            lightbox.init();
+        }
+        
+        // Filter Gallery
+        window.filterGallery = function(category) {
+            currentFilter = category;
+            displayedPhotos = 8;
+            
+            // Update buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(category) || (category === 'all' && btn.textContent.includes('All'))) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Re-render with animation
+            const grid = document.getElementById('galleryGrid');
+            grid.style.opacity = '0';
+            grid.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                renderGallery();
+                grid.style.transition = 'all 0.4s';
+                grid.style.opacity = '1';
+                grid.style.transform = 'translateY(0)';
+            }, 200);
+        };
+        
+        // Change View
+        window.changeView = function(view) {
+            const grid = document.getElementById('galleryGrid');
+            const buttons = document.querySelectorAll('.view-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            if (view === 'grid') {
+                grid.style.columnCount = window.innerWidth > 991 ? '4' : window.innerWidth > 576 ? '2' : '1';
+            } else {
+                grid.style.columnCount = window.innerWidth > 991 ? '3' : window.innerWidth > 576 ? '2' : '1';
+            }
+        };
+        
+        // Load More Photos
+        window.loadMorePhotos = function() {
+            const btn = document.getElementById('loadMoreBtn');
+            btn.classList.add('loading');
+            btn.innerHTML = '<i class="fas fa-spinner"></i> Loading...';
+            
+            setTimeout(() => {
+                displayedPhotos += 4;
+                renderGallery();
+            }, 800);
+        };
+        
+        // Toggle Like
+        window.toggleLike = function(event, id) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const btn = event.currentTarget;
+            btn.classList.toggle('active');
+            
+            const isLiked = btn.classList.contains('active');
+            showToast(isLiked ? 'Added to favorites!' : 'Removed from favorites', 'success');
+        };
+        
+        // Upload Zone
+        function initUploadZone() {
+            const zone = document.getElementById('uploadZone');
+            const input = document.getElementById('photoUpload');
+            
+            // Drag and drop
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.style.borderColor = 'var(--gold)';
+                zone.style.background = 'rgba(212, 175, 55, 0.1)';
+            });
+            
+            zone.addEventListener('dragleave', () => {
+                zone.style.borderColor = 'var(--sage)';
+                zone.style.background = 'white';
+            });
+            
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.style.borderColor = 'var(--sage)';
+                zone.style.background = 'white';
+                handleUpload(e.dataTransfer.files);
+            });
+        }
+        
+        window.triggerUpload = function() {
+            document.getElementById('photoUpload').click();
+        };
+        
+        window.handleUpload = function(files) {
+            if (!files.length) return;
+            
+            showToast(`Uploading ${files.length} photo(s)...`, 'info');
+            
+            // Simulate upload
+            setTimeout(() => {
+                showToast('Photos uploaded successfully! Awaiting approval.', 'success');
+            }, 2000);
+        };
+        
+        // Update Stats
+        function updateStats(count) {
+            animateNumber('photoCount', count);
+        }
+        
+        // Utility
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        
+        // Toast Notification
+        function showToast(message, type) {
+            const existing = document.querySelector('.toast-container');
+            if (existing) existing.remove();
+            
+            const container = document.createElement('div');
+            container.className = 'toast-container';
+            container.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 9999;
+            `;
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-circle',
+                info: 'info-circle'
+            };
+            
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                info: '#17a2b8'
+            };
+            
+            container.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 20px 30px;
+                    border-radius: 50px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    animation: slideUp 0.4s ease;
+                    border-left: 4px solid ${colors[type]};
+                ">
+                    <i class="fas fa-${icons[type]}" style="color: ${colors[type]}; font-size: 1.5rem;"></i>
+                    <span style="font-weight: 500; color: #333;">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(container);
+            
+            setTimeout(() => {
+                container.style.opacity = '0';
+                container.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => container.remove(), 300);
+            }, 3000);
+        }
+        
+        // Add animation style
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
