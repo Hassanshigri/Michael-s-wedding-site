@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Sarah & Michael Wedding</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container" data-aos="zoom-in">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h2>Admin Access</h2>
+                <p>Sarah & Michael Wedding</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-key"></i> Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" class="form-control" placeholder="Enter password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="login-error" id="loginError">
+                    <i class="fas fa-exclamation-circle"></i> Invalid credentials
+                </div>
+                <button type="submit" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </button>
+            </form>
+            <div class="login-footer">
+                <p>Protected Area • Authorized Personnel Only</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (Hidden until login) -->
+    <div id="dashboard" class="dashboard-wrapper" style="display: none;">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <span class="brand-icon">❦</span>
+                    <span class="brand-text">S&M Admin</span>
+                </div>
+                <button class="sidebar-toggle d-lg-none" onclick="toggleSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-label">Main</span>
+                    <a href="#" class="nav-link active" onclick="showSection('overview')">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Overview</span>
+                    </a>
+                    <a href="#" class="nav-link" onclick="showSection('guests')">
+                        <i class="fas fa-users"></i>
+                        <span>Guest List</span>
+                        <span class="badge" id="sidebarGuestCount">0</span>
+                    </a>
+                    <a href="#" class="nav-link" onclick="showSection('rsvps')">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>RSVPs</span>
+                        <span class="badge badge-success" id="sidebarRSVPCount">0</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <span class="nav-label">Management</span>
+                    <a href="#" class="nav-link" onclick="showSection('meals')">
+                        <i class="fas fa-utensils"></i>
+                        <span>Meal Counts</span>
+                    </a>
+                    <a href="#" class="nav-link" onclick="showSection('tables')">
+                        <i class="fas fa-chair"></i>
+                        <span>Table Planner</span>
+                    </a>
+                    <a href="#" class="nav-link" onclick="showSection('messages')">
+                        <i class="fas fa-envelope"></i>
+                        <span>Messages</span>
+                        <span class="badge badge-warning" id="sidebarMessageCount">0</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <span class="nav-label">Tools</span>
+                    <a href="#" class="nav-link" onclick="exportData('excel')">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Export Excel</span>
+                    </a>
+                    <a href="#" class="nav-link" onclick="exportData('pdf')">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Export PDF</span>
+                    </a>
+                    <a href="#" class="nav-link" onclick="showSection('settings')">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">Admin User</span>
+                        <span class="user-role">Event Manager</span>
+                    </div>
+                </div>
+                <button class="btn btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Top Header -->
+            <header class="top-header">
+                <button class="menu-toggle d-lg-none" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="globalSearch" placeholder="Search guests..." onkeyup="searchGuests(this.value)">
+                </div>
+                
+                <div class="header-actions">
+                    <button class="btn btn-icon" onclick="refreshData()" title="Refresh">
+                        <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                    </button>
+                    <button class="btn btn-icon" onclick="showNotifications()" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <div class="header-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="content-wrapper">
+                
+                <!-- Overview Section -->
+                <section id="overviewSection" class="dashboard-section active">
+                    <div class="section-header">
+                        <h1><i class="fas fa-chart-pie me-3"></i>Dashboard Overview</h1>
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="exportData('excel')">
+                                <i class="fas fa-download me-2"></i>Export Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card primary" data-aos="fade-up" data-aos-delay="0">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Total Guests</span>
+                                <span class="stat-value" id="totalGuests">0</span>
+                                <span class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i> <span id="guestChange">12%</span>
+                                </span>
+                            </div>
+                            <div class="stat-chart" id="guestChart"></div>
+                        </div>
+                        
+                        <div class="stat-card success" data-aos="fade-up" data-aos-delay="100">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Attending</span>
+                                <span class="stat-value" id="attendingGuests">0</span>
+                                <span class="stat-change">
+                                    <span id="attendingPercent">0%</span> of total
+                                </span>
+                            </div>
+                            <div class="progress-ring">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="progress-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="progress-fill" id="attendingRing" cx="50" cy="50" r="45"/>
+                                </svg>
+                                <span class="progress-text" id="attendingRingText">0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card warning" data-aos="fade-up" data-aos-delay="200">
+                            <div class="stat-icon">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Pending RSVPs</span>
+                                <span class="stat-value" id="pendingRSVPs">0</span>
+                                <span class="stat-change negative">
+                                    <i class="fas fa-exclamation-triangle"></i> Action needed
+                                </span>
+                            </div>
+                            <div class="stat-action">
+                                <button class="btn btn-sm" onclick="showSection('guests')">Send Reminders</button>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card info" data-aos="fade-up" data-aos-delay="300">
+                            <div class="stat-icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Meals Selected</span>
+                                <span class="stat-value" id="mealsSelected">0</span>
+                                <span class="stat-change">
+                                    <span id="mealPercent">0%</span> confirmed
+                                </span>
+                            </div>
+                            <div class="mini-chart" id="mealMiniChart"></div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="charts-row">
+                        <div class="chart-card" data-aos="fade-up">
+                            <div class="card-header">
+                                <h3><i class="fas fa-chart-bar me-2"></i>RSVP Timeline</h3>
+                                <div class="card-actions">
+                                    <select class="form-select form-select-sm" onchange="updateTimelineChart(this.value)">
+                                        <option value="7">Last 7 Days</option>
+                                        <option value="30" selected>Last 30 Days</option>
+                                        <option value="90">Last 3 Months</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="timelineChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-card" data-aos="fade-up" data-aos-delay="100">
+                            <div class="card-header">
+                                <h3><i class="fas fa-chart-pie me-2"></i>Response Distribution</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="responseChart"></canvas>
+                                </div>
+                                <div class="chart-legend" id="responseLegend"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity & Quick Actions -->
+                    <div class="bottom-row">
+                        <div class="activity-card" data-aos="fade-up">
+                            <div class="card-header">
+                                <h3><i class="fas fa-history me-2"></i>Recent Activity</h3>
+                                <a href="#" onclick="showAllActivity()">View All</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-list" id="activityList">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-actions-card" data-aos="fade-up" data-aos-delay="100">
+                            <div class="card-header">
+                                <h3><i class="fas fa-bolt me-2"></i>Quick Actions</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="action-grid">
+                                    <button class="action-btn" onclick="showAddGuestModal()">
+                                        <i class="fas fa-user-plus"></i>
+                                        <span>Add Guest</span>
+                                    </button>
+                                    <button class="action-btn" onclick="sendBulkEmail()">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>Send Email</span>
+                                    </button>
+                                    <button class="action-btn" onclick="printNameCards()">
+                                        <i class="fas fa-print"></i>
+                                        <span>Print Cards</span>
+                                    </button>
+                                    <button class="action-btn" onclick="showSection('tables')">
+                                        <i class="fas fa-chair"></i>
+                                        <span>Arrange Tables</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Guest List Section -->
+                <section id="guestsSection" class="dashboard-section">
+                    <div class="section-header">
+                        <h1><i class="fas fa-users me-3"></i>Guest List</h1>
+                        <div class="header-actions">
+                            <button class="btn btn-outline-primary me-2" onclick="showImportModal()">
+                                <i class="fas fa-file-import me-2"></i>Import
+                            </button>
+                            <button class="btn btn-primary" onclick="showAddGuestModal()">
+                                <i class="fas fa-plus me-2"></i>Add Guest
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label>Status:</label>
+                            <select class="form-select" id="statusFilter" onchange="filterGuests()">
+                                <option value="all">All Guests</option>
+                                <option value="attending">Attending</option>
+                                <option value="declined">Declined</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Meal:</label>
+                            <select class="form-select" id="mealFilter" onchange="filterGuests()">
+                                <option value="all">All Meals</option>
+                                <option value="beef">Beef</option>
+                                <option value="chicken">Chicken</option>
+                                <option value="fish">Fish</option>
+                                <option value="vegetarian">Vegetarian</option>
+                                <option value="vegan">Vegan</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Table:</label>
+                            <select class="form-select" id="tableFilter" onchange="filterGuests()">
+                                <option value="all">All Tables</option>
+                                <option value="unassigned">Unassigned</option>
+                                <option value="table1">Table 1</option>
+                                <option value="table2">Table 2</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-outline-secondary" onclick="resetFilters()">
+                                <i class="fas fa-undo"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Guest Table -->
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="guestTable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll()">
+                                        </th>
+                                        <th>Guest Name</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Guests</th>
+                                        <th>Meal</th>
+                                        <th>Table</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="guestTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-footer">
+                            <div class="bulk-actions">
+                                <select class="form-select form-select-sm" id="bulkAction" onchange="executeBulkAction(this.value)">
+                                    <option value="">Bulk Actions...</option>
+                                    <option value="email">Send Email</option>
+                                    <option value="reminder">Send Reminder</option>
+                                    <option value="delete">Delete Selected</option>
+                                    <option value="export">Export Selected</option>
+                                </select>
+                            </div>
+                            <div class="pagination" id="pagination">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RSVP Management Section -->
+                <section id="rsvpsSection" class="dashboard-section">
+                    <div class="section-header">
+                        <h1><i class="fas fa-clipboard-check me-3"></i>RSVP Management</h1>
+                    </div>
+                    
+                    <div class="rsvp-stats">
+                        <div class="rsvp-stat-card" data-aos="fade-up">
+                            <div class="rsvp-icon yes">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="rsvp-info">
+                                <span class="rsvp-label">Accepted</span>
+                                <span class="rsvp-value" id="rsvpAccepted">0</span>
+                            </div>
+                        </div>
+                        <div class="rsvp-stat-card" data-aos="fade-up" data-aos-delay="100">
+                            <div class="rsvp-icon no">
+                                <i class="fas fa-times"></i>
+                            </div>
+                            <div class="rsvp-info">
+                                <span class="rsvp-label">Declined</span>
+                                <span class="rsvp-value" id="rsvpDeclined">0</span>
+                            </div>
+                        </div>
+                        <div class="rsvp-stat-card" data-aos="fade-up" data-aos-delay="200">
+                            <div class="rsvp-icon pending">
+                                <i class="fas fa-question"></i>
+                            </div>
+                            <div class="rsvp-info">
+                                <span class="rsvp-label">No Response</span>
+                                <span class="rsvp-value" id="rsvpNoResponse">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-rsvps-card" data-aos="fade-up">
+                        <div class="card-header">
+                            <h3>Recent RSVPs</h3>
+                            <div class="header-actions">
+                                <button class="btn btn-sm btn-outline-primary" onclick="refreshRSVPs()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="rsvp-list" id="rsvpList">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Meal Counts Section -->
+                <section id="mealsSection" class="dashboard-section">
+                    <div class="section-header">
+                        <h1><i class="fas fa-utensils me-3"></i>Meal Counts</h1>
+                        <button class="btn btn-primary" onclick="exportMealReport()">
+                            <i class="fas fa-download me-2"></i>Export Report
+                        </button>
+                    </div>
+
+                    <div class="meals-grid">
+                        <div class="meal-card beef" data-aos="fade-up">
+                            <div class="meal-icon">🥩</div>
+                            <div class="meal-info">
+                                <h3>Beef Tenderloin</h3>
+                                <div class="meal-count" id="beefCount">0</div>
+                                <div class="meal-percent" id="beefPercent">0%</div>
+                            </div>
+                            <div class="meal-progress">
+                                <div class="progress-bar" id="beefBar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="meal-card chicken" data-aos="fade-up" data-aos-delay="100">
+                            <div class="meal-icon">🍗</div>
+                            <div class="meal-info">
+                                <h3>Herb Chicken</h3>
+                                <div class="meal-count" id="chickenCount">0</div>
+                                <div class="meal-percent" id="chickenPercent">0%</div>
+                            </div>
+                            <div class="meal-progress">
+                                <div class="progress-bar" id="chickenBar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="meal-card fish" data-aos="fade-up" data-aos-delay="200">
+                            <div class="meal-icon">🐟</div>
+                            <div class="meal-info">
+                                <h3>Pan-Seared Salmon</h3>
+                                <div class="meal-count" id="fishCount">0</div>
+                                <div class="meal-percent" id="fishPercent">0%</div>
+                            </div>
+                            <div class="meal-progress">
+                                <div class="progress-bar" id="fishBar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="meal-card vegetarian" data-aos="fade-up" data-aos-delay="300">
+                            <div class="meal-icon">🥗</div>
+                            <div class="meal-info">
+                                <h3>Vegetarian Risotto</h3>
+                                <div class="meal-count" id="vegetarianCount">0</div>
+                                <div class="meal-percent" id="vegetarianPercent">0%</div>
+                            </div>
+                            <div class="meal-progress">
+                                <div class="progress-bar" id="vegetarianBar"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="meal-card vegan" data-aos="fade-up" data-aos-delay="400">
+                            <div class="meal-icon">🌱</div>
+                            <div class="meal-info">
+                                <h3>Vegan Delight</h3>
+                                <div class="meal-count" id="veganCount">0</div>
+                                <div class="meal-percent" id="veganPercent">0%</div>
+                            </div>
+                            <div class="meal-progress">
+                                <div class="progress-bar" id="veganBar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dietary-section" data-aos="fade-up">
+                        <div class="card-header">
+                            <h3><i class="fas fa-allergies me-2"></i>Dietary Restrictions</h3>
+                        </div>
+                        <div class="dietary-tags-container" id="dietaryContainer">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Other sections placeholders -->
+                <section id="tablesSection" class="dashboard-section">
+                    <div class="section-header">
+                        <h1><i class="fas fa-chair me-3"></i>Table Planner</h1>
+                        <button class="btn btn-primary" onclick="addTable()">
+                            <i class="fas fa-plus me-2"></i>Add Table
+                        </button>
+                    </div>
+                    <div class="coming-soon">
+                        <i class="fas fa-chair"></i>
+                        <h3>Table Planner Coming Soon</h3>
+                        <p>Drag and drop interface for seating arrangements</p>
+                    </div>
+                </section>
+
+                <section id="messagesSection" class="dashboard-section">
+                    <div class="section-header">
+                        <h1><i class="fas fa-envelope me-3"></i>Messages</h1>
+                    </div>
+                    <div class="coming-soon">
+                        <i class="fas fa-envelope"></i>
+                        <h3>Message Center</h3>
+                        <p>Guest communications and announcements</p>
+                    </div>
+                </section>
+
+                <section id="settingsSection" class="dashboard-section">
+                    <div class="section-header">
+                        <h1><i class="fas fa-cog me-3"></i>Settings</h1>
+                    </div>
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <h4>Event Details</h4>
+                            <form id="eventSettingsForm">
+                                <div class="form-group">
+                                    <label>Event Date</label>
+                                    <input type="date" class="form-control" value="2025-06-15">
+                                </div>
+                                <div class="form-group">
+                                    <label>RSVP Deadline</label>
+                                    <input type="date" class="form-control" value="2025-05-01">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                        <div class="settings-card">
+                            <h4>Admin Users</h4>
+                            <div class="user-list">
+                                <div class="user-item">
+                                    <span>admin@wedding.com</span>
+                                    <span class="badge bg-primary">Owner</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary mt-3" onclick="addAdminUser()">
+                                <i class="fas fa-plus me-2"></i>Add User
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Guest Modal -->
+    <div class="modal fade" id="addGuestModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Add New Guest</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addGuestForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>First Name *</label>
+                                    <input type="text" class="form-control" name="firstName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Last Name *</label>
+                                    <input type="text" class="form-control" name="lastName" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" class="form-control" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label>Group Size</label>
+                            <select class="form-select" name="guestCount">
+                                <option value="1">1 Guest</option>
+                                <option value="2">2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                                <option value="5">5 Guests</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveGuest()">Add Guest</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
