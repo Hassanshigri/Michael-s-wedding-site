@@ -3,6 +3,40 @@
 // Wedding Management System
 // ===================================
 
+// ===================================
+// API Configuration
+// ===================================
+const API_BASE_URL = window.location.origin.includes('localhost')
+    ? 'http://localhost:3000/api'
+    : '/api';
+
+// API Helper
+async function apiCall(endpoint, options = {}) {
+    const token = sessionStorage.getItem('weddingAdminToken');
+    const defaultOptions = {
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+        }
+    };
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        ...defaultOptions,
+        ...options,
+        headers: {
+            ...defaultOptions.headers,
+            ...options.headers
+        }
+    });
+    if (!response.ok) {
+        if (response.status === 401) {
+            logout();
+            throw new Error('Session expired');
+        }
+        throw new Error(await response.text());
+    }
+    return response.json();
+}
+
 // Global State
 let currentUser = null;
 let guests = [];
@@ -30,23 +64,23 @@ const sampleGuests = [
 // ===================================
 // INITIALIZATION
 // ===================================
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize AOS
     AOS.init({
         duration: 600,
         once: true,
         offset: 50
     });
-    
+
     // Set current date
     updateCurrentDate();
-    
+
     // Check for saved login
     checkSavedLogin();
-    
+
     // Initialize event listeners
     initializeEventListeners();
-    
+
     // Load sample data
     guests = [...sampleGuests];
 });
@@ -65,9 +99,9 @@ function checkSavedLogin() {
 function initializeEventListeners() {
     // Login form
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
-    
+
     // Enter key on password field
-    document.getElementById('password').addEventListener('keypress', function(e) {
+    document.getElementById('password').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             handleLogin(e);
         }
@@ -77,7 +111,7 @@ function initializeEventListeners() {
 function togglePassword() {
     const passwordInput = document.getElementById('password');
     const toggleBtn = document.querySelector('.toggle-password i');
-    
+
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
         toggleBtn.classList.remove('fa-eye');
@@ -89,61 +123,48 @@ function togglePassword() {
     }
 }
 
-function handleLogin(e) {
+// ===================================
+// AUTHENTICATION (Updated)
+// ===================================
+async function handleLogin(e) {
     e.preventDefault();
-    
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    const errorDiv = document.getElementById('loginError');
-    
-    // Simple authentication (replace with real auth in production)
-    if (username === 'admin' && password === 'wedding2025') {
-        currentUser = {
-            username: username,
-            name: 'Admin User',
-            role: 'Event Manager'
-        };
-        
-        // Save to session
-        sessionStorage.setItem('weddingAdminUser', JSON.stringify(currentUser));
-        
-        // Hide error if shown
-        errorDiv.classList.remove('show');
-        
-        // Show dashboard with animation
+    try {
+        const data = await apiCall('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ username, password })
+        });
+        // Save token
+        sessionStorage.setItem('weddingAdminToken', data.token);
+        sessionStorage.setItem('weddingAdminUser', JSON.stringify(data.user));
+        currentUser = data.user;
         showDashboard();
-        
-        showToast('Welcome back, ' + currentUser.name + '!', 'success');
-    } else {
-        errorDiv.classList.add('show');
-        // Shake animation
-        const loginContainer = document.querySelector('.login-container');
-        loginContainer.style.animation = 'none';
-        setTimeout(() => {
-            loginContainer.style.animation = 'shake 0.5s';
-        }, 10);
+        showToast('Welcome back, ' + data.user.username + '!', 'success');
+    } catch (error) {
+        document.getElementById('loginError').classList.add('show');
     }
 }
 
 function logout() {
     currentUser = null;
     sessionStorage.removeItem('weddingAdminUser');
-    
+
     // Hide dashboard, show login
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('loginScreen').style.display = 'flex';
-    
+
     // Clear form
     document.getElementById('loginForm').reset();
     document.getElementById('loginError').classList.remove('show');
-    
+
     showToast('Logged out successfully', 'success');
 }
 
 function showDashboard() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'flex';
-    
+
     // Initialize dashboard
     updateAllStats();
     initializeCharts();
@@ -151,7 +172,7 @@ function showDashboard() {
     renderRecentActivity();
     renderRSVPList();
     updateMealCounts();
-    
+
     // Start real-time updates
     setInterval(updateRealTimeStats, 30000); // Update every 30 seconds
 }
@@ -164,18 +185,18 @@ function showSection(sectionName) {
     document.querySelectorAll('.dashboard-section').forEach(section => {
         section.classList.remove('active');
     });
-    
+
     // Show selected section
     document.getElementById(sectionName + 'Section').classList.add('active');
-    
+
     // Update sidebar
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
     });
     event.currentTarget.classList.add('active');
-    
+
     currentSection = sectionName;
-    
+
     // Refresh data for section
     if (sectionName === 'overview') {
         updateAllStats();
@@ -185,7 +206,7 @@ function showSection(sectionName) {
     } else if (sectionName === 'meals') {
         updateMealCounts();
     }
-    
+
     // Close sidebar on mobile
     if (window.innerWidth < 992) {
         document.getElementById('sidebar').classList.remove('show');
@@ -205,30 +226,30 @@ function updateAllStats() {
     const declined = guests.filter(g => g.attendance === 'no').length;
     const pending = guests.filter(g => g.attendance === 'pending').length;
     const mealsSelected = guests.filter(g => g.attendance === 'yes' && g.meal).length;
-    
+
     // Update stat cards
     animateNumber('totalGuests', totalGuests);
     animateNumber('attendingGuests', attending);
     animateNumber('pendingRSVPs', pending);
     animateNumber('mealsSelected', mealsSelected);
-    
+
     // Update percentages
     const attendingPercent = totalGuests > 0 ? Math.round((attending / totalGuests) * 100) : 0;
     const mealPercent = attending > 0 ? Math.round((mealsSelected / attending) * 100) : 0;
-    
+
     document.getElementById('attendingPercent').textContent = attendingPercent + '%';
     document.getElementById('attendingRingText').textContent = attendingPercent + '%';
     document.getElementById('mealPercent').textContent = mealPercent + '%';
-    
+
     // Update progress ring
     const circumference = 2 * Math.PI * 45;
     const offset = circumference - (attendingPercent / 100) * circumference;
     document.getElementById('attendingRing').style.strokeDashoffset = offset;
-    
+
     // Update sidebar badges
     document.getElementById('sidebarGuestCount').textContent = totalGuests;
     document.getElementById('sidebarRSVPCount').textContent = attending;
-    
+
     // Update RSVP stats
     document.getElementById('rsvpAccepted').textContent = attending;
     document.getElementById('rsvpDeclined').textContent = declined;
@@ -240,22 +261,22 @@ function animateNumber(elementId, targetValue) {
     const startValue = parseInt(element.textContent) || 0;
     const duration = 1000;
     const startTime = performance.now();
-    
+
     function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         // Easing function
         const easeOutQuart = 1 - Math.pow(1 - progress, 4);
         const currentValue = Math.round(startValue + (targetValue - startValue) * easeOutQuart);
-        
+
         element.textContent = currentValue;
-        
+
         if (progress < 1) {
             requestAnimationFrame(update);
         }
     }
-    
+
     requestAnimationFrame(update);
 }
 
@@ -282,7 +303,7 @@ function initializeCharts() {
         const rsvpData = dates.map(date => {
             return guests.filter(g => g.date === date).length;
         });
-        
+
         charts.timeline = new Chart(timelineCtx, {
             type: 'line',
             data: {
@@ -320,14 +341,14 @@ function initializeCharts() {
             }
         });
     }
-    
+
     // Response Distribution Chart
     const responseCtx = document.getElementById('responseChart');
     if (responseCtx) {
         const attending = guests.filter(g => g.attendance === 'yes').length;
         const declined = guests.filter(g => g.attendance === 'no').length;
         const pending = guests.filter(g => g.attendance === 'pending').length;
-        
+
         charts.response = new Chart(responseCtx, {
             type: 'doughnut',
             data: {
@@ -348,7 +369,7 @@ function initializeCharts() {
                 }
             }
         });
-        
+
         // Custom legend
         const legendHTML = `
             <div class="legend-item">
@@ -385,7 +406,7 @@ function updateTimelineChart(days) {
         const rsvpData = dates.map(date => {
             return guests.filter(g => g.date === date).length;
         });
-        
+
         charts.timeline.data.labels = dates.map(d => d.slice(5));
         charts.timeline.data.datasets[0].data = rsvpData;
         charts.timeline.update();
@@ -408,12 +429,12 @@ function getLastNDays(n) {
 function renderGuestTable() {
     const tbody = document.getElementById('guestTableBody');
     const filteredGuests = getFilteredGuests();
-    
+
     // Pagination
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     const paginatedGuests = filteredGuests.slice(start, end);
-    
+
     tbody.innerHTML = paginatedGuests.map(guest => `
         <tr data-id="${guest.id}">
             <td>
@@ -457,25 +478,25 @@ function renderGuestTable() {
             </td>
         </tr>
     `).join('');
-    
+
     renderPagination(filteredGuests.length);
 }
 
 function getFilteredGuests() {
     let filtered = [...guests];
-    
+
     // Status filter
     const statusFilter = document.getElementById('statusFilter').value;
     if (statusFilter !== 'all') {
         filtered = filtered.filter(g => g.attendance === statusFilter);
     }
-    
+
     // Meal filter
     const mealFilter = document.getElementById('mealFilter').value;
     if (mealFilter !== 'all') {
         filtered = filtered.filter(g => g.meal === mealFilter);
     }
-    
+
     // Table filter
     const tableFilter = document.getElementById('tableFilter').value;
     if (tableFilter !== 'all') {
@@ -485,17 +506,17 @@ function getFilteredGuests() {
             filtered = filtered.filter(g => g.table === tableFilter);
         }
     }
-    
+
     // Search
     const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
     if (searchTerm) {
-        filtered = filtered.filter(g => 
+        filtered = filtered.filter(g =>
             g.firstName.toLowerCase().includes(searchTerm) ||
             g.lastName.toLowerCase().includes(searchTerm) ||
             g.email.toLowerCase().includes(searchTerm)
         );
     }
-    
+
     return filtered;
 }
 
@@ -521,14 +542,14 @@ function searchGuests(term) {
 function renderPagination(totalItems) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const pagination = document.getElementById('pagination');
-    
+
     let html = '';
-    
+
     // Previous
     html += `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" onclick="changePage(${currentPage - 1})">
         <i class="fas fa-chevron-left"></i>
     </button>`;
-    
+
     // Page numbers
     for (let i = 1; i <= totalPages; i++) {
         if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
@@ -537,22 +558,22 @@ function renderPagination(totalItems) {
             html += `<span class="page-btn">...</span>`;
         }
     }
-    
+
     // Next
     html += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" onclick="changePage(${currentPage + 1})">
         <i class="fas fa-chevron-right"></i>
     </button>`;
-    
+
     pagination.innerHTML = html;
 }
 
 function changePage(page) {
     const totalPages = Math.ceil(getFilteredGuests().length / itemsPerPage);
     if (page < 1 || page > totalPages) return;
-    
+
     currentPage = page;
     renderGuestTable();
-    
+
     // Scroll to top of table
     document.querySelector('.table-card').scrollIntoView({ behavior: 'smooth' });
 }
@@ -560,7 +581,7 @@ function changePage(page) {
 function toggleSelectAll() {
     const selectAll = document.getElementById('selectAll');
     const checkboxes = document.querySelectorAll('.guest-checkbox');
-    
+
     checkboxes.forEach(cb => {
         cb.checked = selectAll.checked;
     });
@@ -569,13 +590,13 @@ function toggleSelectAll() {
 function executeBulkAction(action) {
     const selected = document.querySelectorAll('.guest-checkbox:checked');
     const ids = Array.from(selected).map(cb => parseInt(cb.value));
-    
+
     if (ids.length === 0) {
         showToast('Please select guests first', 'warning');
         return;
     }
-    
-    switch(action) {
+
+    switch (action) {
         case 'email':
             showToast(`Sending email to ${ids.length} guests...`, 'success');
             break;
@@ -594,76 +615,69 @@ function executeBulkAction(action) {
             exportSelectedGuests(ids);
             break;
     }
-    
+
     document.getElementById('bulkAction').value = '';
 }
 
+
 // ===================================
-// GUEST ACTIONS
+// GUEST MANAGEMENT (Updated)
 // ===================================
-function showAddGuestModal() {
-    const modal = new bootstrap.Modal(document.getElementById('addGuestModal'));
-    modal.show();
+async function loadGuests() {
+    try {
+        const data = await apiCall('/guests?page=' + currentPage);
+        guests = data.guests;
+        renderGuestTable();
+        if (data.stats) updateAllStats(data.stats);
+    } catch (error) {
+        showToast('Failed to load guests', 'error');
+    }
 }
 
-function saveGuest() {
+// Replace saveGuest with API version
+async function saveGuest() {
     const form = document.getElementById('addGuestForm');
     const formData = new FormData(form);
-    
-    const newGuest = {
-        id: guests.length + 1,
+    const guestData = {
         firstName: formData.get('firstName'),
         lastName: formData.get('lastName'),
         email: formData.get('email'),
         phone: formData.get('phone'),
-        guestCount: parseInt(formData.get('guestCount')),
-        attendance: 'pending',
-        meal: '',
-        table: '',
-        dietary: [],
-        notes: '',
-        date: ''
+        guestCount: parseInt(formData.get('guestCount'))
     };
-    
-    guests.push(newGuest);
-    
-    // Close modal
-    bootstrap.Modal.getInstance(document.getElementById('addGuestModal')).hide();
-    
-    // Reset form
-    form.reset();
-    
-    // Update UI
-    renderGuestTable();
-    updateAllStats();
-    
-    showToast('Guest added successfully!', 'success');
+    try {
+        await apiCall('/guests', {
+            method: 'POST',
+            body: JSON.stringify(guestData)
+        });
+        bootstrap.Modal.getInstance(document.getElementById('addGuestModal')).hide();
+        form.reset();
+        loadGuests();
+        showToast('Guest added successfully!', 'success');
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
 }
 
-function editGuest(id) {
-    const guest = guests.find(g => g.id === id);
-    if (!guest) return;
-    
-    // Populate and show edit modal (simplified - would use same modal as add)
-    showToast(`Editing ${guest.firstName} ${guest.lastName}`, 'info');
-}
-
-function viewGuest(id) {
-    const guest = guests.find(g => g.id === id);
-    if (!guest) return;
-    
-    showToast(`Viewing details for ${guest.firstName} ${guest.lastName}`, 'info');
-}
-
-function deleteGuest(id) {
+// Replace deleteGuest with API version
+async function deleteGuest(id) {
     if (!confirm('Are you sure you want to delete this guest?')) return;
-    
-    guests = guests.filter(g => g.id !== id);
-    renderGuestTable();
-    updateAllStats();
-    
-    showToast('Guest deleted successfully', 'success');
+    try {
+        await apiCall(`/guests/${id}`, { method: 'DELETE' });
+        loadGuests();
+        showToast('Guest deleted', 'success');
+    } catch (error) {
+        showToast('Failed to delete guest', 'error');
+    }
 }
+if (!confirm('Are you sure you want to delete this guest?')) return;
+
+guests = guests.filter(g => g.id !== id);
+renderGuestTable();
+updateAllStats();
+
+showToast('Guest deleted successfully', 'success');
+
 
 // ===================================
 // MEAL MANAGEMENT
@@ -672,22 +686,22 @@ function updateMealCounts() {
     const meals = ['beef', 'chicken', 'fish', 'vegetarian', 'vegan'];
     const attending = guests.filter(g => g.attendance === 'yes');
     const totalMeals = attending.length;
-    
+
     meals.forEach(meal => {
         const count = attending.filter(g => g.meal === meal).length;
         const percent = totalMeals > 0 ? Math.round((count / totalMeals) * 100) : 0;
-        
+
         const countEl = document.getElementById(meal + 'Count');
         const percentEl = document.getElementById(meal + 'Percent');
         const barEl = document.getElementById(meal + 'Bar');
-        
+
         if (countEl) {
             animateNumber(meal + 'Count', count);
             percentEl.textContent = percent + '%';
             barEl.style.width = percent + '%';
         }
     });
-    
+
     // Dietary restrictions
     const dietaryCounts = {};
     attending.forEach(g => {
@@ -695,7 +709,7 @@ function updateMealCounts() {
             dietaryCounts[d] = (dietaryCounts[d] || 0) + 1;
         });
     });
-    
+
     const dietaryContainer = document.getElementById('dietaryContainer');
     if (dietaryContainer) {
         if (Object.keys(dietaryCounts).length === 0) {
@@ -732,12 +746,12 @@ function renderRSVPList() {
         .filter(g => g.date)
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .slice(0, 5);
-    
+
     if (recentRSVPs.length === 0) {
         rsvpList.innerHTML = '<p class="text-muted text-center">No RSVPs yet</p>';
         return;
     }
-    
+
     rsvpList.innerHTML = recentRSVPs.map(guest => `
         <div class="rsvp-item">
             <div class="rsvp-guest">
@@ -757,7 +771,7 @@ function renderRSVPList() {
 function refreshRSVPs() {
     const icon = document.querySelector('.fa-sync-alt');
     icon.classList.add('fa-spin');
-    
+
     setTimeout(() => {
         icon.classList.remove('fa-spin');
         renderRSVPList();
@@ -776,7 +790,7 @@ function renderRecentActivity() {
         { type: 'rsvp', text: 'Emily Davis RSVP\'d Yes (+3 guests)', time: '5 hours ago', icon: 'check', color: 'success' },
         { type: 'update', text: 'Table assignment updated', time: '1 day ago', icon: 'chair', color: 'info' }
     ];
-    
+
     const activityList = document.getElementById('activityList');
     activityList.innerHTML = activities.map(activity => `
         <div class="activity-item">
@@ -821,11 +835,11 @@ function exportToExcel() {
         g.dietary.join(', '),
         g.notes
     ]);
-    
+
     const csvContent = [headers, ...rows]
         .map(row => row.map(cell => `"${cell}"`).join(','))
         .join('\n');
-    
+
     downloadFile(csvContent, 'wedding-guests.csv', 'text/csv');
     showToast('Excel file downloaded!', 'success');
 }
@@ -1045,7 +1059,7 @@ function updateCurrentDate() {
 // ===================================
 // KEYBOARD SHORTCUTS
 // ===================================
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     // Ctrl/Cmd + R for refresh
     if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
         e.preventDefault();
@@ -1058,7 +1072,7 @@ document.addEventListener('keydown', function(e) {
         modals.forEach(modal => {
             try {
                 bootstrap.Modal.getInstance(modal).hide();
-            } catch (err) {}
+            } catch (err) { }
         });
     }
 
@@ -1073,7 +1087,7 @@ document.addEventListener('keydown', function(e) {
 // ===================================
 // WINDOW RESIZE HANDLER
 // ===================================
-window.addEventListener('resize', function() {
+window.addEventListener('resize', function () {
     if (window.innerWidth >= 992) {
         const sb = document.getElementById('sidebar');
         if (sb) sb.classList.remove('show');
@@ -1088,7 +1102,7 @@ window.addEventListener('resize', function() {
 // ===================================
 // BEFORE UNLOAD - SAVE STATE
 // ===================================
-window.addEventListener('beforeunload', function() {
+window.addEventListener('beforeunload', function () {
     // Save current state to sessionStorage
     try {
         sessionStorage.setItem('weddingAdminState', JSON.stringify({
@@ -1100,7 +1114,7 @@ window.addEventListener('beforeunload', function() {
                 table: document.getElementById('tableFilter')?.value
             }
         }));
-    } catch (err) {}
+    } catch (err) { }
 });
 
 // Console greeting
