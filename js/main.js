@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // NAVBAR EFFECTS
     // ===================================
     const navbar = document.getElementById('mainNav');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
     let lastScroll = 0;
 
     window.addEventListener('scroll', function () {
@@ -30,9 +31,15 @@ document.addEventListener('DOMContentLoaded', function () {
             navbar.classList.remove('scrolled');
         }
 
-        // Hide/show on scroll direction (mobile friendly)
-        // Only hide navbar when scrolling down past 100px threshold
-        if (currentScroll > lastScroll && currentScroll > 100) {
+        // Hide/show on scroll direction (only on large screens, not when mobile menu is open)
+        const isMobileMenuOpen = navbarCollapse && navbarCollapse.classList.contains('show');
+        const isSmallScreen = window.innerWidth < 992;
+        
+        // Skip hide animation if mobile menu is open or on small screens
+        if (isMobileMenuOpen || isSmallScreen) {
+            navbar.style.transform = 'translateY(0)';
+        } else if (currentScroll > lastScroll && currentScroll > 100) {
+            // Only hide on large screens when scrolling down
             navbar.style.transform = 'translateY(-100%)';
             navbar.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
         } else {
