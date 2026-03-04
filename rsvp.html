@@ -1448,6 +1448,11 @@
         }
       }
 
+      // API Configuration
+      const API_BASE_URL = window.location.origin.includes('localhost') 
+          ? 'http://localhost:3000/api' 
+          : 'https://wedding-api.onrender.com/api';
+
       // Replace the RSVP form submission in rsvp.html
       async function submitRSVP() {
         const formData = {
@@ -1455,7 +1460,7 @@
           lastName: document.getElementById("lastName").value,
           email: document.getElementById("email").value,
           phone: document.getElementById("phone").value,
-          attendance: formData.attendance,
+          attendance: window.formData.attendance,
           guestCount: parseInt(
             document.getElementById("guestCount").textContent,
           ),
@@ -1467,7 +1472,7 @@
         };
 
         try {
-          const response = await fetch("/api/rsvp/submit", {
+          const response = await fetch(`${API_BASE_URL}/rsvp/submit`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formData),
