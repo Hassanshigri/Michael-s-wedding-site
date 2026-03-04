@@ -496,7 +496,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // MOBILE MENU IMPROVEMENTS
     // ===================================
     const navbarToggler = document.querySelector('.navbar-toggler');
-    const navbarCollapse = document.querySelector('.navbar-collapse');
 
     if (navbarToggler && navbarCollapse) {
         // Close menu when clicking outside
