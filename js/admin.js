@@ -49,21 +49,51 @@ let itemsPerPage = 10;
 // INITIALIZATION
 // ===================================
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize AOS
-    AOS.init({
-        duration: 600,
-        once: true,
-        offset: 50
-    });
+    try {
+        // Initialize AOS
+        AOS.init({
+            duration: 600,
+            once: true,
+            offset: 50
+        });
+    } catch (e) {
+        console.warn('AOS initialization warning:', e.message);
+    }
+
+    // Ensure login screen is visible on page load
+    const loginScreen = document.getElementById('loginScreen');
+    const dashboard = document.getElementById('dashboard');
+    if (loginScreen) loginScreen.style.display = 'flex';
+    if (dashboard) dashboard.style.display = 'none';
 
     // Set current date
-    updateCurrentDate();
+    try {
+        updateCurrentDate();
+    } catch (e) {
+        console.warn('Date update warning:', e.message);
+    }
 
     // Check for saved login
     checkSavedLogin();
 
     // Initialize event listeners
     initializeEventListeners();
+    
+    // Safety check: Ensure login screen stays visible if not authenticated (after 500ms)
+    setTimeout(() => {
+        if (!currentUser) {
+            const ls = document.getElementById('loginScreen');
+            const db = document.getElementById('dashboard');
+            if (ls && ls.style.display !== 'flex') {
+                console.warn('Restoring login screen visibility');
+                ls.style.display = 'flex';
+            }
+            if (db && db.style.display !== 'none') {
+                console.warn('Hiding dashboard');
+                db.style.display = 'none';
+            }
+        }
+    }, 500);
 });
 
 // ===================================
@@ -109,42 +139,86 @@ function togglePassword() {
 // ===================================
 async function handleLogin(e) {
     e.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
+    
+    // Validate form
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const errorDiv = document.getElementById('loginError');
+    
+    if (!username || !password) {
+        console.error('Login form elements not found');
+        return;
+    }
+    
+    const usernameVal = username.value.trim();
+    const passwordVal = password.value;
+    
+    if (!usernameVal || !passwordVal) {
+        errorDiv.classList.add('show');
+        return;
+    }
+    
     try {
         const data = await apiCall('/auth/login', {
             method: 'POST',
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username: usernameVal, password: passwordVal })
         });
+        
         // Save token
         sessionStorage.setItem('weddingAdminToken', data.token);
         sessionStorage.setItem('weddingAdminUser', JSON.stringify(data.user));
         currentUser = data.user;
+        
+        errorDiv.classList.remove('show');
         showDashboard();
         showToast('Welcome back, ' + data.user.username + '!', 'success');
     } catch (error) {
-        document.getElementById('loginError').classList.add('show');
+        console.error('Login error:', error);
+        errorDiv.classList.add('show');
+        // Shake animation
+        const loginContainer = document.querySelector('.login-container');
+        if (loginContainer) {
+            loginContainer.style.animation = 'none';
+            setTimeout(() => {
+                loginContainer.style.animation = 'slideUp 0.6s ease';
+            }, 10);
+        }
     }
 }
 
 function logout() {
     currentUser = null;
     sessionStorage.removeItem('weddingAdminUser');
+    sessionStorage.removeItem('weddingAdminToken');
 
-    // Hide dashboard, show login
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('loginScreen').style.display = 'flex';
+    // Ensure login screen is visible
+    const loginScreen = document.getElementById('loginScreen');
+    const dashboard = document.getElementById('dashboard');
+    
+    if (loginScreen) loginScreen.style.display = 'flex';
+    if (dashboard) dashboard.style.display = 'none';
 
     // Clear form
-    document.getElementById('loginForm').reset();
-    document.getElementById('loginError').classList.remove('show');
+    const form = document.getElementById('loginForm');
+    if (form) form.reset();
+    
+    const loginError = document.getElementById('loginError');
+    if (loginError) loginError.classList.remove('show');
 
     showToast('Logged out successfully', 'success');
 }
 
 function showDashboard() {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'flex';
+    const loginScreen = document.getElementById('loginScreen');
+    const dashboard = document.getElementById('dashboard');
+    
+    if (!loginScreen || !dashboard) {
+        console.error('Dashboard elements not found');
+        return;
+    }
+    
+    loginScreen.style.display = 'none';
+    dashboard.style.display = 'flex';
 
     // Initialize dashboard - load data from API
     loadGuests();
@@ -616,7 +690,11 @@ async function loadGuests() {
             initializeCharts();
         }
     } catch (error) {
-        showToast('Failed to load guests', 'error');
+        // Only show error if dashboard is actually showing
+        const loginScreen = document.getElementById('loginScreen');
+        if (loginScreen && loginScreen.style.display === 'none') {
+            showToast('Failed to load guests. Ensure backend is running.', 'error');
+        }
         console.error('Error loading guests:', error);
     }
 }
