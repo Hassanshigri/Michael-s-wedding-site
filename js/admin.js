@@ -8,7 +8,7 @@
 // ===================================
 const API_BASE_URL = window.location.origin.includes('localhost')
     ? 'http://localhost:3000/api'
-    : 'https://wedding-api.onrender.com/api'; // Update with your Render backend URL
+    : 'https://wedding-api-xxxx.onrender.com/api'; // Replace xxxx with your Render service URL
 
 // API Helper
 async function apiCall(endpoint, options = {}) {
@@ -144,9 +144,12 @@ async function handleLogin(e) {
     const username = document.getElementById('username');
     const password = document.getElementById('password');
     const errorDiv = document.getElementById('loginError');
+    const loginBtn = document.querySelector('.btn-login');
     
     if (!username || !password) {
         console.error('Login form elements not found');
+        if (errorDiv) errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Form elements missing';
+        if (errorDiv) errorDiv.classList.add('show');
         return;
     }
     
@@ -154,27 +157,57 @@ async function handleLogin(e) {
     const passwordVal = password.value;
     
     if (!usernameVal || !passwordVal) {
-        errorDiv.classList.add('show');
+        if (errorDiv) {
+            errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter username and password';
+            errorDiv.classList.add('show');
+        }
         return;
     }
     
     try {
+        // Show loading state
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
+        }
+        
+        console.log('Attempting login to:', `${API_BASE_URL}/auth/login`);
+        
         const data = await apiCall('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ username: usernameVal, password: passwordVal })
         });
+        
+        console.log('Login successful:', data);
         
         // Save token
         sessionStorage.setItem('weddingAdminToken', data.token);
         sessionStorage.setItem('weddingAdminUser', JSON.stringify(data.user));
         currentUser = data.user;
         
-        errorDiv.classList.remove('show');
+        if (errorDiv) errorDiv.classList.remove('show');
         showDashboard();
         showToast('Welcome back, ' + data.user.username + '!', 'success');
+        
+        // Reset button
+        if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
+        }
     } catch (error) {
         console.error('Login error:', error);
-        errorDiv.classList.add('show');
+        
+        if (errorDiv) {
+            let errorMsg = 'Invalid username or password';
+            if (error.message.includes('Failed to fetch')) {
+                errorMsg = 'Cannot connect to server. Is it running on localhost:3000?';
+            } else if (error.message.includes('401')) {
+                errorMsg = 'Invalid credentials';
+            }
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${errorMsg}`;
+            errorDiv.classList.add('show');
+        }
+        
         // Shake animation
         const loginContainer = document.querySelector('.login-container');
         if (loginContainer) {
@@ -182,6 +215,12 @@ async function handleLogin(e) {
             setTimeout(() => {
                 loginContainer.style.animation = 'slideUp 0.6s ease';
             }, 10);
+        }
+        
+        // Reset button
+        if (loginBtn) {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Login';
         }
     }
 }
