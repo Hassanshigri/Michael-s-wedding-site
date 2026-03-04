@@ -31,10 +31,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // Hide/show on scroll direction (mobile friendly)
+        // Only hide navbar when scrolling down past 100px threshold
         if (currentScroll > lastScroll && currentScroll > 100) {
             navbar.style.transform = 'translateY(-100%)';
+            navbar.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
         } else {
             navbar.style.transform = 'translateY(0)';
+            navbar.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
         }
 
         lastScroll = currentScroll;
