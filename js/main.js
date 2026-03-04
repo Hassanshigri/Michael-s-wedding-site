@@ -498,6 +498,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const navbarToggler = document.querySelector('.navbar-toggler');
 
     if (navbarToggler && navbarCollapse) {
+        // Toggle menu on toggle button click
+        navbarToggler.addEventListener('click', function () {
+            if (navbarCollapse.classList.contains('show')) {
+                const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+                bsCollapse.hide();
+            } else {
+                const bsCollapse = new bootstrap.Collapse(navbarCollapse);
+                bsCollapse.show();
+            }
+        });
+
         // Close menu when clicking outside
         document.addEventListener('click', function (e) {
             if (!navbar.contains(e.target) && navbarCollapse.classList.contains('show')) {
