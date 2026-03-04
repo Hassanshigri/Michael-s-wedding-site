@@ -8,7 +8,7 @@
 // ===================================
 const API_BASE_URL = window.location.origin.includes('localhost')
     ? 'http://localhost:3000/api'
-    : '/api';
+    : 'https://wedding-api.onrender.com/api'; // Update with your Render backend URL
 
 // API Helper
 async function apiCall(endpoint, options = {}) {
@@ -45,22 +45,6 @@ let charts = {};
 let currentPage = 1;
 let itemsPerPage = 10;
 
-// Sample Data (Replace with API calls in production)
-const sampleGuests = [
-    { id: 1, firstName: 'John', lastName: 'Smith', email: 'john@example.com', phone: '(555) 123-4567', attendance: 'yes', guestCount: 2, meal: 'beef', table: 'Table 1', dietary: [], notes: '', date: '2024-03-01' },
-    { id: 2, firstName: 'Sarah', lastName: 'Johnson', email: 'sarah@example.com', phone: '(555) 234-5678', attendance: 'yes', guestCount: 1, meal: 'fish', table: 'Table 2', dietary: ['Gluten-Free'], notes: '', date: '2024-03-02' },
-    { id: 3, firstName: 'Michael', lastName: 'Brown', email: 'michael@example.com', phone: '(555) 345-6789', attendance: 'no', guestCount: 0, meal: '', table: '', dietary: [], notes: 'Sorry, out of town', date: '2024-03-03' },
-    { id: 4, firstName: 'Emily', lastName: 'Davis', email: 'emily@example.com', phone: '(555) 456-7890', attendance: 'yes', guestCount: 3, meal: 'vegetarian', table: 'Table 3', dietary: ['Nut Allergy'], notes: '', date: '2024-03-04' },
-    { id: 5, firstName: 'David', lastName: 'Wilson', email: 'david@example.com', phone: '(555) 567-8901', attendance: 'pending', guestCount: 0, meal: '', table: '', dietary: [], notes: '', date: '' },
-    { id: 6, firstName: 'Jessica', lastName: 'Miller', email: 'jessica@example.com', phone: '(555) 678-9012', attendance: 'yes', guestCount: 2, meal: 'chicken', table: 'Table 1', dietary: [], notes: '', date: '2024-03-05' },
-    { id: 7, firstName: 'Robert', lastName: 'Taylor', email: 'robert@example.com', phone: '(555) 789-0123', attendance: 'yes', guestCount: 1, meal: 'beef', table: 'Table 2', dietary: ['Dairy-Free'], notes: '', date: '2024-03-06' },
-    { id: 8, firstName: 'Jennifer', lastName: 'Anderson', email: 'jennifer@example.com', phone: '(555) 890-1234', attendance: 'pending', guestCount: 0, meal: '', table: '', dietary: [], notes: '', date: '' },
-    { id: 9, firstName: 'William', lastName: 'Thomas', email: 'william@example.com', phone: '(555) 901-2345', attendance: 'yes', guestCount: 2, meal: 'fish', table: 'Table 3', dietary: [], notes: '', date: '2024-03-07' },
-    { id: 10, firstName: 'Elizabeth', lastName: 'Jackson', email: 'elizabeth@example.com', phone: '(555) 012-3456', attendance: 'no', guestCount: 0, meal: '', table: '', dietary: [], notes: 'Previous commitment', date: '2024-03-08' },
-    { id: 11, firstName: 'James', lastName: 'White', email: 'james@example.com', phone: '(555) 123-4567', attendance: 'yes', guestCount: 1, meal: 'vegan', table: 'Table 4', dietary: ['Vegan'], notes: '', date: '2024-03-09' },
-    { id: 12, firstName: 'Patricia', lastName: 'Harris', email: 'patricia@example.com', phone: '(555) 234-5678', attendance: 'yes', guestCount: 2, meal: 'chicken', table: 'Table 1', dietary: [], notes: '', date: '2024-03-10' }
-];
-
 // ===================================
 // INITIALIZATION
 // ===================================
@@ -80,9 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize event listeners
     initializeEventListeners();
-
-    // Load sample data
-    guests = [...sampleGuests];
 });
 
 // ===================================
@@ -165,16 +146,11 @@ function showDashboard() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'flex';
 
-    // Initialize dashboard
-    updateAllStats();
-    initializeCharts();
-    renderGuestTable();
-    renderRecentActivity();
-    renderRSVPList();
-    updateMealCounts();
+    // Initialize dashboard - load data from API
+    loadGuests();
 
     // Start real-time updates
-    setInterval(updateRealTimeStats, 30000); // Update every 30 seconds
+    setInterval(loadGuests, 30000); // Refresh data every 30 seconds
 }
 
 // ===================================
@@ -626,11 +602,22 @@ function executeBulkAction(action) {
 async function loadGuests() {
     try {
         const data = await apiCall('/guests?page=' + currentPage);
-        guests = data.guests;
+        guests = data.guests || data;
+        
+        // Update all UI elements
+        updateAllStats();
         renderGuestTable();
-        if (data.stats) updateAllStats(data.stats);
+        renderRecentActivity();
+        renderRSVPList();
+        updateMealCounts();
+        
+        // Initialize charts on first load
+        if (currentSection === 'overview') {
+            initializeCharts();
+        }
     } catch (error) {
         showToast('Failed to load guests', 'error');
+        console.error('Error loading guests:', error);
     }
 }
 
